@@ -1,7 +1,7 @@
 packer {
   required_plugins {
     amazon = {
-      version = " 1.2.8"
+      version = "1.2.8"
       source  = "github.com/hashicorp/amazon"
     }
 
@@ -22,9 +22,9 @@ source "amazon-ebs" "group2" {
   ssh_private_key_file = "/home/ubuntu/.ssh/id_rsa"
   ami_regions = [
     "us-east-1",
-    "us-east-2",
-    "us-west-1",
-    "us-west-2",
+    # "us-east-2",
+    # "us-west-1",
+    # "us-west-2",
     ]
 }
 

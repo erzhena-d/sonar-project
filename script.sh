@@ -16,13 +16,13 @@ function prepare_vm() {
 }
 
 function build_ami() {
-    cd packer || exit
+    cd modules/packer || exit
     packer init .
     packer build sonarqube.pkr.hcl
 }
 
 function create_ec2() {
-    cd terraform/dev || exit
+    cd modules/terraform/dev || exit
     terraform init
     terraform apply -auto-approve
 }
