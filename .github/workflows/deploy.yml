@@ -1,0 +1,57 @@
+name: sonarqube-deployment
+
+on:
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: "AWS region"
+        required: true
+        type: choice
+        options:
+          - us-east-1
+          - us-east-2
+          - us-west-1
+          - us-west-2
+      action:
+        description: "Terraform action"
+        required: true
+        type: choice
+        options:
+          - apply
+          - destroy
+
+jobs:
+  terraform:
+    runs-on: ubuntu-latest
+    environment: ${{ inputs.environment }}
+
+    steps:
+      - name: Git Clone
+        uses: actions/checkout@v4
+
+      - name: Write tfvars file
+        run: echo "${{ vars.TF_VARS }}" > terraform/dev/terraform.tfvars   
+
+      - name: Set up Terraform
+        uses: hashicorp/setup-terraform@v3  
+      
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4.3.1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ inputs.environment }}
+      
+      - name: Terraform init
+        run: terraform -chdir=terraform/dev init -backend-config=key="${{ inputs.environment }}/terraform.tfstate"
+
+      - name: Apply or destroy
+        run: |
+          if [[ "${{ inputs.action }}" == "apply" ]]
+          then
+            terraform -chdir=terraform/dev apply -auto-approve
+          else 
+            terraform -chdir=terraform/dev destroy -auto-approve
+          fi  
+  
+     
