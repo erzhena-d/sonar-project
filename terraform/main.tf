@@ -6,12 +6,12 @@ terraform {
   backend "s3" {
     bucket = "sonar-bucket-erzhena"
     key    = "terraform.tfstate"
-    region = "us-east-1"
+    region = "${var.region}"
   }
 }
 
 module vpc {
-    source = "../vpc"
+    source = "../modules/vpc"
     vpc_cidr = var.vpc_cidr
     subnet1_cidr = var.subnet1_cidr
     subnet2_cidr = var.subnet2_cidr
@@ -21,9 +21,10 @@ module vpc {
 }
 
 module ec2 {
-    source = "../ec2"
+    source = "../modules/ec2"
     instance_type = var.instance_type
-    subnet_id = module.vpc.subnet
-    security_group_id = module.vpc.security_group_id
+    region = var.region
+    # subnet_id = module.vpc.subnet
+    # security_group_id = module.vpc.security_group_id
 }
 
