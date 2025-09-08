@@ -13,3 +13,13 @@ variable "subnet_id" {
 variable "security_group_id" {
   type = string
 }
+
+variable "key_name" {
+  type        = string
+  description = "Name of the key pair to use for EC2 instances"
+}
+
+variable "ssh_public_key_path" {
+  type    = string
+  default = "~/.ssh/deployer-key.pub"
+}

@@ -5,7 +5,7 @@ provider "aws" {
 terraform {
   backend "s3" {
     bucket = "sonar-bucket-erzhena"
-    key    = "us-east-1/terraform.tfstate"
+    key    = "terraform.tfstate"
     region = "us-east-1"
   }
 }
@@ -24,7 +24,8 @@ module "ec2" {
   source            = "../modules/ec2"
   instance_type     = var.instance_type
   region            = var.region
-  subnet_id         = module.vpc.subnet_ids[0]
+  subnet_id         = module.vpc.subnet_ids[0] 
   security_group_id = module.vpc.security_group_id
+  key_name          = var.key_pair.deployer.key_name
 }
 

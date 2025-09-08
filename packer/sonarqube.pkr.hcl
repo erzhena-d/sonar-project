@@ -16,7 +16,7 @@ source "amazon-ebs" "group2" {
   region        = "us-east-1"
   instance_type = "t2.medium"
   ssh_username  = "ubuntu"
-  ssh_interface = "private_ip"
+  ssh_interface = "public_ip"
 
   source_ami_filter {
     filters = {
@@ -28,17 +28,17 @@ source "amazon-ebs" "group2" {
     owners      = ["099720109477"] # Canonical
   }
 
-  ami_name      = "my-sonarqube-group2-{{ timestamp }}"
+  ami_name        = "my-sonarqube-group2-{{ timestamp }}"
   ami_description = "Sonarqube AMI(Ubuntu 22.04) built by Packer and Ansible for group 2 project"
   ami_regions = [
     "us-east-1",
     # "us-east-2",
     # "us-west-1",
     # "us-west-2",
-    ]
+  ]
   temporary_key_pair_type = "rsa"
   temporary_key_pair_name = "packer-sonarqube-{{timestamp}}"
-  
+
 }
 
 build {
@@ -48,10 +48,21 @@ build {
   ]
 
   provisioner "shell" {
-    inline = ["sleep 30"]
+    inline = [
+      "sudo DEBIAN_FRONTEND=noninteractive apt-get update -y",
+      "sudo apt-get install -y python3 unzip",
+    ]
   }
 
   provisioner "ansible" {
     playbook_file = "../ansible/main.yml"
+    use_proxy     = false
+    user          = "ubuntu"
+    extra_arguments = [
+      "--become",
+      "-e", "ansible_python_interpreter=/usr/bin/python3",
+      "-e", "ansible_remote_tmp=/tmp",
+      "-vvv"
+    ]
   }
 }

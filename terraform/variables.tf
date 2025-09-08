@@ -43,4 +43,7 @@ variable "key_name" {
   default     = "deployer-key"
 }
 
-
+variable "ssh_public_key_path" {
+  type    = string
+  default = "~/.ssh/deployer-key.pub"
+}
